@@ -17,7 +17,46 @@ export class PrismaAuthRepository implements AuthRepository {
 
   async findUserById(id: string): Promise<UserRecord | undefined> {
     const user = await this.prisma.user.findUnique({ where: { id } });
-    return user ? toUser(user) : undefined;
+    if (!user) return undefined;
+
+    const now = new Date();
+    const upcomingPlayerBookings = await this.prisma.reservation.count({
+      where: {
+        playerId: id,
+        endsAt: { gt: now },
+        status: { in: ['confirmed', 'draft'] },
+      },
+    });
+
+    const unpaidPlayerBalance = await this.prisma.reservation.count({
+      where: {
+        playerId: id,
+        dueAtVenuePiastres: { gt: 0 },
+        status: 'confirmed',
+      },
+    });
+
+    let upcomingOwnerBookings = 0;
+    if (user.role === 'owner') {
+      const venues = await this.prisma.venue.findMany({
+        where: { ownerId: id },
+        select: { id: true },
+      });
+      if (venues.length > 0) {
+        upcomingOwnerBookings = await this.prisma.reservation.count({
+          where: {
+            venueId: { in: venues.map((v) => v.id) },
+            endsAt: { gt: now },
+            status: { in: ['confirmed', 'draft'] },
+          },
+        });
+      }
+    }
+
+    const hasUpcoming = upcomingPlayerBookings > 0 || upcomingOwnerBookings > 0;
+    const hasUnpaid = unpaidPlayerBalance > 0;
+
+    return toUser(user, hasUpcoming, hasUnpaid);
   }
 
   async findUserByEmail(email: string): Promise<UserRecord | undefined> {
@@ -202,22 +241,26 @@ export class PrismaAuthRepository implements AuthRepository {
   }
 }
 
-function toUser(user: {
-  id: string;
-  email: string;
-  passwordHash: string;
-  role: Role;
-  status: UserStatus;
-  name: string;
-  phone: string | null;
-  language: Language;
-  emailVerifiedAt: Date | null;
-  phoneVerified: boolean;
-  deletedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}): UserRecord {
-  return { ...user, hasUpcomingBookings: false, hasUnpaidBalance: false };
+function toUser(
+  user: {
+    id: string;
+    email: string;
+    passwordHash: string;
+    role: Role;
+    status: UserStatus;
+    name: string;
+    phone: string | null;
+    language: Language;
+    emailVerifiedAt: Date | null;
+    phoneVerified: boolean;
+    deletedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+  },
+  hasUpcomingBookings = false,
+  hasUnpaidBalance = false,
+): UserRecord {
+  return { ...user, hasUpcomingBookings, hasUnpaidBalance };
 }
 
 function toSession(session: {
