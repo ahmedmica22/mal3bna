@@ -11,5 +11,12 @@
 *.log
 .vscode/
 .idea/
+# AI Agent instructions & logs
+AGENT/
+AGENTS.md
+progress.md
+decisions.md
+
+# OS & Editor
 Thumbs.db
 .DS_Store
