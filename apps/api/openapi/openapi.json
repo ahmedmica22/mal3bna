@@ -1,0 +1,3997 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Court Booking Platform API",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "DeviceRegistrationInput": {
+        "type": "object",
+        "properties": {
+          "expoToken": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^(ExponentPushToken|ExpoPushToken)\\[[A-Za-z0-9_-]+\\]$"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "ios",
+              "android"
+            ]
+          }
+        },
+        "required": [
+          "expoToken",
+          "platform"
+        ],
+        "additionalProperties": false
+      },
+      "DeviceRemovalInput": {
+        "type": "object",
+        "properties": {
+          "expoToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "expoToken"
+        ],
+        "additionalProperties": false
+      },
+      "MobileNotification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "readAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/MobileNotification/properties/readAt/anyOf/0"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "link",
+          "readAt",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "NotificationPreference": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "emailEnabled": {
+            "type": "boolean"
+          },
+          "pushEnabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "category",
+          "emailEnabled",
+          "pushEnabled"
+        ],
+        "additionalProperties": false
+      },
+      "PlayerStrike": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationId": {
+            "$ref": "#/components/schemas/PlayerStrike/properties/id"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "removedAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerStrike/properties/expiresAt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "removedReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/PlayerStrike/properties/expiresAt"
+          }
+        },
+        "required": [
+          "id",
+          "reservationId",
+          "expiresAt",
+          "removedAt",
+          "removedReason",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "PlayerDispute": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationId": {
+            "$ref": "#/components/schemas/PlayerDispute/properties/id"
+          },
+          "playerMessage": {
+            "type": "string"
+          },
+          "ownerResponse": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "upheld",
+              "overturned"
+            ]
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/PlayerDispute/properties/decidedAt/anyOf/0"
+          }
+        },
+        "required": [
+          "id",
+          "reservationId",
+          "playerMessage",
+          "ownerResponse",
+          "status",
+          "decidedAt",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "PlayerAppeal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nextAllowedAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerAppeal/properties/decidedAt/anyOf/0"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/PlayerAppeal/properties/decidedAt/anyOf/0"
+          }
+        },
+        "required": [
+          "id",
+          "message",
+          "status",
+          "decidedAt",
+          "nextAllowedAt",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "VenueReview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "comment": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ownerReply": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ownerRepliedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/VenueReview/properties/ownerRepliedAt/anyOf/0"
+          }
+        },
+        "required": [
+          "id",
+          "rating",
+          "comment",
+          "ownerReply",
+          "ownerRepliedAt",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "ReviewInput": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "reservationId",
+          "rating"
+        ],
+        "additionalProperties": false
+      },
+      "DisputeInput": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "playerMessage": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "reservationId",
+          "playerMessage"
+        ],
+        "additionalProperties": false
+      },
+      "AppealInput": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "PreferenceInput": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "emailEnabled": {
+            "type": "boolean"
+          },
+          "pushEnabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "category",
+          "emailEnabled",
+          "pushEnabled"
+        ],
+        "additionalProperties": false
+      },
+      "CreateBookingInput": {
+        "type": "object",
+        "properties": {
+          "courtId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "venueId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hours": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "totalPiastres": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "depositPiastres": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paymentOption": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "full"
+            ]
+          }
+        },
+        "required": [
+          "courtId",
+          "venueId",
+          "startsAt",
+          "hours",
+          "totalPiastres",
+          "depositPiastres",
+          "paymentOption"
+        ],
+        "additionalProperties": false
+      },
+      "PlayerProfileInput": {
+        "type": "object",
+        "properties": {
+          "preferredFoot": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "playingStyle": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "position1": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "position2": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "areaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "padelSide": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "padelHand": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "padelLevel": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "photoFileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "photoUrl": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayerProfileResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "photoFileId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerProfileResponse/properties/userId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "photoUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "preferredFoot": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "playingStyle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position1": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position2": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "areaId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerProfileResponse/properties/userId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "padelSide": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "padelHand": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "padelLevel": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "photoFileId",
+          "photoUrl",
+          "preferredFoot",
+          "playingStyle",
+          "position1",
+          "position2",
+          "areaId",
+          "padelSide",
+          "padelHand",
+          "padelLevel"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerManualInput": {
+        "type": "object",
+        "properties": {
+          "courtId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hours": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "customerName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customerPhone": {
+            "type": "string"
+          },
+          "totalPiastres": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "courtId",
+          "startsAt",
+          "hours",
+          "customerName",
+          "totalPiastres"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerBlockInput": {
+        "type": "object",
+        "properties": {
+          "courtId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hours": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "courtId",
+          "startsAt",
+          "hours",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerProfileInput": {
+        "type": "object",
+        "properties": {
+          "photoUrl": {
+            "type": "string"
+          },
+          "photoFileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 30
+          }
+        },
+        "additionalProperties": false
+      },
+      "OwnerVenueInput": {
+        "type": "object",
+        "properties": {
+          "areaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 40
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "maxHoursPerBooking": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          }
+        },
+        "required": [
+          "areaId",
+          "name",
+          "description",
+          "phone",
+          "latitude",
+          "longitude",
+          "address"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerVenueUpdateInput": {
+        "type": "object",
+        "properties": {
+          "areaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 40
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "maxHoursPerBooking": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          }
+        },
+        "additionalProperties": false
+      },
+      "OwnerCourtInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "sport": {
+            "type": "string",
+            "enum": [
+              "football",
+              "padel"
+            ]
+          },
+          "size": {
+            "type": "integer"
+          },
+          "surface": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "isIndoor": {
+            "type": "boolean"
+          },
+          "hourlyPriceEgp": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mimeType": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "url"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 2,
+            "maxItems": 6
+          }
+        },
+        "required": [
+          "name",
+          "sport",
+          "photos"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerPhotosInput": {
+        "type": "object",
+        "properties": {
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mimeType": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "url"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 2,
+            "maxItems": 6
+          }
+        },
+        "required": [
+          "photos"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerHoursInput": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "integer"
+          },
+          "openMinute": {
+            "type": "integer"
+          },
+          "closeMinute": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dayOfWeek",
+          "openMinute",
+          "closeMinute"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerPricesInput": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dayOfWeek": {
+                  "type": "integer"
+                },
+                "startMinute": {
+                  "type": "integer"
+                },
+                "endMinute": {
+                  "type": "integer"
+                },
+                "pricePiastres": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "required": [
+                "dayOfWeek",
+                "startMinute",
+                "endMinute",
+                "pricePiastres"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "rules"
+        ],
+        "additionalProperties": false
+      },
+      "MobileBookingSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bookingCode": {
+            "type": "string"
+          },
+          "courtId": {
+            "$ref": "#/components/schemas/MobileBookingSummary/properties/id"
+          },
+          "venueId": {
+            "$ref": "#/components/schemas/MobileBookingSummary/properties/id"
+          },
+          "courtName": {
+            "type": "string"
+          },
+          "venueName": {
+            "type": "string"
+          },
+          "venueAddress": {
+            "type": "string"
+          },
+          "sport": {
+            "type": "string",
+            "enum": [
+              "football",
+              "padel"
+            ]
+          },
+          "size": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "$ref": "#/components/schemas/MobileBookingSummary/properties/startsAt"
+          },
+          "status": {
+            "type": "string"
+          },
+          "holdExpiresAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MobileBookingSummary/properties/startsAt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "totalPiastres": {
+            "type": "integer"
+          },
+          "depositPiastres": {
+            "$ref": "#/components/schemas/MobileBookingSummary/properties/totalPiastres"
+          },
+          "paidPiastres": {
+            "$ref": "#/components/schemas/MobileBookingSummary/properties/totalPiastres"
+          },
+          "dueAtVenuePiastres": {
+            "$ref": "#/components/schemas/MobileBookingSummary/properties/totalPiastres"
+          },
+          "paymentOption": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "deposit",
+                  "full"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isTestPayment": {
+            "type": "boolean"
+          },
+          "review": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/components/schemas/MobileBookingSummary/properties/id"
+                  },
+                  "rating": {
+                    "type": "number"
+                  },
+                  "comment": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "rating",
+                  "comment"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dispute": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/components/schemas/MobileBookingSummary/properties/id"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "status"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "bookingCode",
+          "courtId",
+          "venueId",
+          "courtName",
+          "venueName",
+          "venueAddress",
+          "sport",
+          "size",
+          "startsAt",
+          "endsAt",
+          "status",
+          "holdExpiresAt",
+          "totalPiastres",
+          "depositPiastres",
+          "paidPiastres",
+          "dueAtVenuePiastres",
+          "paymentOption",
+          "isTestPayment",
+          "review",
+          "dispute"
+        ],
+        "additionalProperties": false
+      },
+      "ReservationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bookingCode": {
+            "type": "string"
+          },
+          "courtId": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/id"
+          },
+          "venueId": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/id"
+          },
+          "playerId": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/id"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/startsAt"
+          },
+          "status": {
+            "type": "string"
+          },
+          "holdExpiresAt": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/startsAt"
+          },
+          "totalPiastres": {
+            "type": "integer"
+          },
+          "depositPiastres": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/totalPiastres"
+          },
+          "paidPiastres": {
+            "$ref": "#/components/schemas/ReservationResponse/properties/totalPiastres"
+          },
+          "paymentOption": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "full"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "bookingCode",
+          "courtId",
+          "venueId",
+          "playerId",
+          "startsAt",
+          "endsAt",
+          "status",
+          "holdExpiresAt",
+          "totalPiastres",
+          "depositPiastres",
+          "paidPiastres",
+          "paymentOption"
+        ],
+        "additionalProperties": false
+      },
+      "CancellationPreview": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refundPiastres": {
+            "type": "integer"
+          },
+          "retainedPiastres": {
+            "$ref": "#/components/schemas/CancellationPreview/properties/refundPiastres"
+          },
+          "commissionPiastres": {
+            "$ref": "#/components/schemas/CancellationPreview/properties/refundPiastres"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reservationId",
+          "startsAt",
+          "refundPiastres",
+          "retainedPiastres",
+          "commissionPiastres",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerMoney": {
+        "type": "object",
+        "properties": {
+          "availablePiastres": {
+            "type": "integer"
+          },
+          "pendingPiastres": {
+            "$ref": "#/components/schemas/OwnerMoney/properties/availablePiastres"
+          },
+          "releasedPiastres": {
+            "$ref": "#/components/schemas/OwnerMoney/properties/availablePiastres"
+          },
+          "cashCollectedPiastres": {
+            "$ref": "#/components/schemas/OwnerMoney/properties/availablePiastres"
+          },
+          "todayCashCollectedPiastres": {
+            "$ref": "#/components/schemas/OwnerMoney/properties/availablePiastres"
+          },
+          "totalEarnedPiastres": {
+            "$ref": "#/components/schemas/OwnerMoney/properties/availablePiastres"
+          }
+        },
+        "required": [
+          "availablePiastres",
+          "pendingPiastres",
+          "releasedPiastres",
+          "cashCollectedPiastres",
+          "todayCashCollectedPiastres",
+          "totalEarnedPiastres"
+        ],
+        "additionalProperties": false
+      },
+      "OwnerProfileResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "photoUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "photoFileId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnerProfileResponse/properties/userId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "name",
+          "email",
+          "phone",
+          "photoUrl",
+          "photoFileId"
+        ],
+        "additionalProperties": false
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "status",
+          "requestId"
+        ],
+        "additionalProperties": false
+      },
+      "RegisterInput": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "player",
+              "owner"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "role",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "LoginInput": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "EmailInput": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "TokenInput": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "additionalProperties": false
+      },
+      "MobileRefreshInput": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "refreshToken"
+        ],
+        "additionalProperties": false
+      },
+      "ResetPasswordInput": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "ChangePasswordInput": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateMeInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ar"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublicUserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "player",
+              "owner",
+              "admin"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "blocked",
+              "suspended",
+              "pending"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ar"
+            ]
+          },
+          "emailVerifiedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phoneVerified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "status",
+          "name",
+          "phone",
+          "language",
+          "emailVerifiedAt",
+          "phoneVerified"
+        ],
+        "additionalProperties": false
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "player",
+              "owner",
+              "admin"
+            ]
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "sessionId",
+          "role"
+        ],
+        "additionalProperties": false
+      },
+      "AcceptedResponse": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "accepted"
+        ],
+        "additionalProperties": false
+      },
+      "CityResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "nameEn",
+          "nameAr",
+          "isActive"
+        ],
+        "additionalProperties": false
+      },
+      "AreaResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "cityId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "nameEn",
+          "nameAr",
+          "isActive",
+          "cityId"
+        ],
+        "additionalProperties": false
+      },
+      "CourtResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sport": {
+            "type": "string",
+            "enum": [
+              "football",
+              "padel"
+            ]
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [
+                  5,
+                  7,
+                  11
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surface": {
+            "type": "string"
+          },
+          "isIndoor": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "sport",
+          "size",
+          "surface",
+          "isIndoor"
+        ],
+        "additionalProperties": false
+      },
+      "VenueResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "areaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "approved"
+          },
+          "maxHoursPerBooking": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "area": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "nameEn": {
+                "type": "string"
+              },
+              "nameAr": {
+                "type": "string"
+              },
+              "city": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "nameEn": {
+                    "type": "string"
+                  },
+                  "nameAr": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "nameEn",
+                  "nameAr"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "nameEn",
+              "nameAr"
+            ],
+            "additionalProperties": false
+          },
+          "courts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "sport": {
+                  "type": "string",
+                  "enum": [
+                    "football",
+                    "padel"
+                  ]
+                },
+                "size": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "enum": [
+                        5,
+                        7,
+                        11
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "surface": {
+                  "type": "string"
+                },
+                "isIndoor": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "sport",
+                "size",
+                "surface",
+                "isIndoor"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "areaId",
+          "name",
+          "description",
+          "phone",
+          "latitude",
+          "longitude",
+          "address",
+          "timeZone",
+          "status",
+          "maxHoursPerBooking",
+          "courts"
+        ],
+        "additionalProperties": false
+      },
+      "QuoteResponse": {
+        "type": "object",
+        "properties": {
+          "breakdown": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "pricePiastres": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "startsAt",
+                "endsAt",
+                "pricePiastres"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "totalPiastres": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "depositPiastres": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dueAtVenuePiastres": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "breakdown",
+          "totalPiastres",
+          "depositPiastres",
+          "dueAtVenuePiastres"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "startsAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "endsAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "pricePiastres": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "available",
+                "booked",
+                "past"
+              ]
+            }
+          },
+          "required": [
+            "startsAt",
+            "endsAt",
+            "pricePiastres",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "AdminBookingsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "bookingCode": {
+                  "type": "string"
+                },
+                "isTestPayment": {
+                  "type": "boolean"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "booking",
+                    "manual",
+                    "block"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "held",
+                    "confirmed",
+                    "arrived",
+                    "completed",
+                    "no_show",
+                    "no_show_pending",
+                    "cancelled",
+                    "expired"
+                  ]
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "totalPiastres": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "paidPiastres": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "dueAtVenuePiastres": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "playerId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "customerName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "court": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "sport": {
+                      "type": "string",
+                      "enum": [
+                        "football",
+                        "padel"
+                      ]
+                    },
+                    "size": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "sport",
+                    "size"
+                  ],
+                  "additionalProperties": false
+                },
+                "venue": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "player": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "bookingCode",
+                "isTestPayment",
+                "kind",
+                "status",
+                "startsAt",
+                "endsAt",
+                "totalPiastres",
+                "paidPiastres",
+                "dueAtVenuePiastres",
+                "createdAt",
+                "playerId",
+                "customerName",
+                "court",
+                "venue",
+                "player"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "totalPages": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ],
+        "additionalProperties": false
+      },
+      "FakePaymentInput": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failure",
+              "pending"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "additionalProperties": false
+      },
+      "FakePaymentResponse": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failure",
+              "pending"
+            ]
+          },
+          "isTestPayment": {
+            "type": "boolean",
+            "const": true
+          },
+          "booking": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "bookingCode": {
+                "type": "string"
+              },
+              "playerId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "courtId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "venueId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "startsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "holdExpiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "held",
+                  "confirmed",
+                  "arrived",
+                  "completed",
+                  "no_show_pending",
+                  "no_show",
+                  "cancelled",
+                  "expired"
+                ]
+              },
+              "totalPiastres": {
+                "type": "integer"
+              },
+              "depositPiastres": {
+                "type": "integer"
+              },
+              "paidPiastres": {
+                "type": "integer"
+              },
+              "paymentOption": {
+                "type": "string",
+                "enum": [
+                  "deposit",
+                  "full"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "bookingCode",
+              "playerId",
+              "courtId",
+              "venueId",
+              "startsAt",
+              "endsAt",
+              "holdExpiresAt",
+              "status",
+              "totalPiastres",
+              "depositPiastres",
+              "paidPiastres",
+              "paymentOption"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "outcome",
+          "isTestPayment",
+          "booking"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/notifications/devices": {
+      "post": {
+        "operationId": "registerDevice",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRegistrationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Persisted mutation result"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeDevice",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRemovalInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Device removed from this account"
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "getNotifications",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MobileNotification"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "post": {
+        "operationId": "readNotification",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Persisted mutation result"
+          }
+        }
+      }
+    },
+    "/notifications/preferences": {
+      "get": {
+        "operationId": "getNotificationPreferences",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationPreference"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "setNotificationPreference",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferenceInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Persisted mutation result"
+          }
+        }
+      }
+    },
+    "/player/strikes": {
+      "get": {
+        "operationId": "getPlayerStrikes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlayerStrike"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/disputes": {
+      "get": {
+        "operationId": "getPlayerDisputes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlayerDispute"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPlayerDispute",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisputeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Persisted mutation result"
+          }
+        }
+      }
+    },
+    "/player/appeals": {
+      "get": {
+        "operationId": "getPlayerAppeals",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlayerAppeal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPlayerAppeal",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Persisted mutation result"
+          }
+        }
+      }
+    },
+    "/player/reviews": {
+      "post": {
+        "operationId": "createPlayerReview",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Persisted mutation result"
+          }
+        }
+      }
+    },
+    "/public/venues/{venueId}/reviews": {
+      "get": {
+        "operationId": "getVenueReviews",
+        "security": [],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "venueId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VenueReview"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/profile": {
+      "get": {
+        "operationId": "getPlayerProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Profile, or null before one is saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PlayerProfileResponse"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePlayerProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/bookings": {
+      "get": {
+        "operationId": "getPlayerBookings",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MobileBookingSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPlayerBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/bookings/{id}": {
+      "get": {
+        "operationId": "getPlayerBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/bookings/{id}/cancel-preview": {
+      "get": {
+        "operationId": "getCancellationPreview",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancellationPreview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "cancelPlayerBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/profile": {
+      "get": {
+        "operationId": "getOwnerProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateOwnerProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/owner/venues/mine": {
+      "get": {
+        "operationId": "getOwnedVenue",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues": {
+      "post": {
+        "operationId": "registerOwnedVenue",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerVenueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}": {
+      "patch": {
+        "operationId": "updateOwnedVenue",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerVenueUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}/submit": {
+      "post": {
+        "operationId": "submitOwnedVenue",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}/photos": {
+      "post": {
+        "operationId": "uploadVenuePhotos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerPhotosInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}/courts": {
+      "post": {
+        "operationId": "addOwnedCourt",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerCourtInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}/courts/{courtId}/photos": {
+      "post": {
+        "operationId": "uploadCourtPhotos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "courtId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerPhotosInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}/opening-hours": {
+      "post": {
+        "operationId": "setOwnedOpeningHours",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerHoursInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/venues/{venueId}/courts/{courtId}/price-rules": {
+      "post": {
+        "operationId": "setOwnedPriceRules",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "courtId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerPricesInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/bookings": {
+      "get": {
+        "operationId": "getOwnedBookings",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/bookings/{id}/arrive": {
+      "post": {
+        "operationId": "arriveOwnedBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/bookings/{id}/collect": {
+      "post": {
+        "operationId": "collectOwnedBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/bookings/{id}/complete": {
+      "post": {
+        "operationId": "completeOwnedBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "cancelOwnedBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/bookings/{id}/no-show": {
+      "post": {
+        "operationId": "reportOwnedNoShow",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/manual-bookings": {
+      "post": {
+        "operationId": "createManualBooking",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerManualInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/blocks": {
+      "post": {
+        "operationId": "createCourtBlock",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerBlockInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/owner/balance": {
+      "get": {
+        "operationId": "getOwnerBalance",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerMoney"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/player/bookings/{id}/fake-payment": {
+      "post": {
+        "operationId": "simulateLocalPayment",
+        "description": "Development/test only. Requires the booking owner and FakeGateway. No real money is charged.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FakePaymentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FakePaymentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/cities": {
+      "get": {
+        "operationId": "listCities",
+        "responses": {
+          "200": {
+            "description": "Current array response; cursor pagination remains pending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CityResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/areas": {
+      "get": {
+        "operationId": "listAreas",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current array response; cursor pagination remains pending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AreaResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/venues": {
+      "get": {
+        "operationId": "listVenues",
+        "parameters": [
+          {
+            "name": "areaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sport",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current array response; cursor pagination remains pending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VenueResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/venues/{id}": {
+      "get": {
+        "operationId": "getVenue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenueResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/courts/{id}/quote": {
+      "get": {
+        "operationId": "getCourtQuote",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "startsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/courts/{id}/availability": {
+      "get": {
+        "operationId": "getCourtAvailability",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bookings": {
+      "get": {
+        "operationId": "listAdminBookings",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBookingsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "register",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "operationId": "verifyEmail",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "operationId": "resendVerification",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "refresh",
+        "description": "Web uses the HttpOnly refresh cookie without a body. Mobile sends X-Client: mobile and a refreshToken body.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MobileRefreshInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout-all": {
+      "post": {
+        "operationId": "logoutAll",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "forgotPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "resetPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "operationId": "changePassword",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "getMe",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patchMe",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMe",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

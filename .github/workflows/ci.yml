@@ -1,0 +1,47 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          {
+            POSTGRES_USER: court_booking,
+            POSTGRES_PASSWORD: court_booking,
+            POSTGRES_DB: court_booking,
+          }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U court_booking -d court_booking"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      mailpit:
+        image: axllent/mailpit:v1.21
+        ports: ['8025:8025', '1025:1025']
+    env:
+      DATABASE_URL: postgresql://court_booking:court_booking@localhost:5432/court_booking?schema=public
+      JWT_ACCESS_SECRET: ci-access-secret-with-at-least-32-characters
+      JWT_REFRESH_SECRET: ci-refresh-secret-with-at-least-32-characters
+      WEB_ORIGIN: http://localhost:5173
+      MAILPIT_URL: http://localhost:8025
+      MAIL_FROM_EMAIL: no-reply@court-booking.local
+      MAIL_FROM_NAME: Court Booking
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 12.9.1 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile --allow-build=argon2 --allow-build=@prisma/client --allow-build=@prisma/engines --allow-build=esbuild --allow-build=prisma
+      - run: pnpm --filter @court-booking/api exec prisma validate
+      - run: pnpm db:migrate
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm architecture:check
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm openapi:generate

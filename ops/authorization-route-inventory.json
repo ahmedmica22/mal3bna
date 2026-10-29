@@ -1,0 +1,25 @@
+{
+  "generatedFrom": "apps/api/src/modules/auth/presentation/authorization-harness.test.ts",
+  "publicControllers": ["AuthController", "PublicVenueController", "PublicReviewsController"],
+  "protectedControllers": {
+    "MeController": ["player", "owner", "admin"],
+    "BookingController": ["player"],
+    "TrustController": ["player"],
+    "OwnerBookingController": ["owner"],
+    "AdminBookingController": ["admin"],
+    "AdminTrustController": ["admin"],
+    "OwnerVenueController": ["owner"],
+    "OwnerOperationsController": ["owner"],
+    "AdminController": ["admin"],
+    "NotificationsController": ["player", "owner", "admin"],
+    "PlayerReviewsController": ["player"],
+    "OwnerReviewsController": ["owner"],
+    "AdminReviewsController": ["admin"]
+  },
+  "ownershipCases": [
+    "player resources are scoped by authenticated player id",
+    "owner venue, court, booking, review, and closure actions are scoped by authenticated owner id",
+    "admin workflows require admin role and are audit logged",
+    "public endpoints expose only approved public data"
+  ]
+}

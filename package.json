@@ -1,0 +1,35 @@
+{
+  "name": "court-booking-platform",
+  "private": true,
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=22.17.0 <23"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format:check": "prettier --check .",
+    "test": "turbo run test",
+    "architecture:check": "turbo run architecture:check && node scripts/check-client-architecture.mjs && node scripts/check-mobile-api-contract.mjs",
+    "db:generate": "pnpm --filter @court-booking/api prisma:generate",
+    "db:migrate": "pnpm --filter @court-booking/api prisma:migrate",
+    "db:seed": "pnpm --filter @court-booking/api db:seed",
+    "openapi:generate": "pnpm --filter @court-booking/api openapi:generate",
+    "demo:m1": "pnpm --filter @court-booking/api demo:m1",
+    "fake-gateway:proof": "node apps/mobile/fake-gateway-proof.test.mjs",
+    "api-client:generate": "node scripts/generate-api-client.mjs",
+    "dev:web": "pnpm --filter @court-booking/web dev",
+    "dev:mobile": "node scripts/start-mobile.mjs",
+    "mobile": "node scripts/start-mobile.mjs",
+    "mobile:login": "pnpm --filter @court-booking/mobile login"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "qrcode": "^1.5.4",
+    "turbo": "^2.5.6",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.1"
+  }
+}

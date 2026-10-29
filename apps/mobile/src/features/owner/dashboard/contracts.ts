@@ -1,0 +1,30 @@
+import { Venue, Booking, OwnerProfileData, OwnerBalance } from '../../../types/domain';
+import { ThemeType } from '../../../constants/theme';
+import { Language } from '../../../constants/translations';
+export interface OwnerDashboardScreenProps {
+  venue: Venue | null;
+  allBookings?: Booking[];
+  balance?: OwnerBalance;
+  mode?: 'overview' | 'schedule';
+  ownerProfile?: OwnerProfileData | null;
+  onUploadPhoto?: () => void;
+  onSignOut?: () => void;
+  todaysMatches: Booking[];
+  cashDueTodayEgp: string;
+  releasedBalanceEgp: string;
+  loading: boolean;
+  onRefresh?: () => void;
+  onAddWalkIn: () => void;
+  onLockMaintenance: () => void;
+  onArrive: (id: string) => void;
+  onCollectCash: (id: string) => void;
+  onComplete: (id: string) => void;
+  onOpenSchedule: () => void;
+  onOpenRates: () => void;
+  onOpenLedger: () => void;
+  onAddCourt?: () => void;
+  onEditVenue?: () => void;
+  onOpenPhotos?: () => void;
+  theme?: ThemeType;
+  lang?: Language;
+}

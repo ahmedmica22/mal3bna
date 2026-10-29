@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e2a22" />
+      <stop offset="50%" stop-color="#071b15" />
+      <stop offset="100%" stop-color="#040f0c" />
+    </linearGradient>
+    <linearGradient id="pitchStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bef264" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="ballGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#facc15" />
+      <stop offset="40%" stop-color="#a3e635" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded Stadium Shield Background -->
+  <rect x="4" y="4" width="92" height="92" rx="26" fill="url(#bgGrad)" stroke="url(#pitchStroke)" stroke-width="3" />
+  
+  <!-- Outer Court Pitch Boundary -->
+  <rect x="16" y="20" width="68" height="60" rx="12" stroke="#a3e635" stroke-width="3" stroke-opacity="0.9" />
+  
+  <!-- Pitch Halfway Line -->
+  <line x1="50" y1="20" x2="50" y2="80" stroke="#a3e635" stroke-width="2.5" stroke-opacity="0.8" />
+  
+  <!-- Goal Areas -->
+  <path d="M 16 34 H 28 V 66 H 16" stroke="#4ade80" stroke-width="2" stroke-opacity="0.7" />
+  <path d="M 84 34 H 72 V 66 H 84" stroke="#4ade80" stroke-width="2" stroke-opacity="0.7" />
+
+  <!-- Center Circle -->
+  <circle cx="50" cy="50" r="14" stroke="#a3e635" stroke-width="2.5" stroke-opacity="0.9" />
+
+  <!-- Glowing Kinetic Sports Ball at Center -->
+  <circle cx="50" cy="50" r="7" fill="url(#ballGrad)" />
+  <circle cx="48" cy="48" r="2.2" fill="#ffffff" fill-opacity="0.9" />
+</svg>

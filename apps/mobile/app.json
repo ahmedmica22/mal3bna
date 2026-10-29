@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "mal3bna",
+    "slug": "court-booking",
+    "version": "1.0.0",
+    "orientation": "default",
+    "scheme": "courtapp",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0b1715"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mal3bna.courtbooking",
+      "icon": "./assets/icon.png"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0b1715"
+      },
+      "package": "com.mal3bna.courtbooking"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow mal3bna to scan booking QR codes.",
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-notifications"
+    ]
+  }
+}

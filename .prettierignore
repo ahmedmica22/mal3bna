@@ -1,0 +1,10 @@
+**/dist/**
+**/node_modules/**
+**/.turbo/**
+AGENT/**
+AGENTS.md
+decisions.md
+progress.md
+README.md
+pnpm-lock.yaml
+apps/api/openapi/openapi.json

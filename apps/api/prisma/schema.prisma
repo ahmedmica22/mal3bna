@@ -1,0 +1,721 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  player
+  owner
+  admin
+}
+
+enum UserStatus {
+  active
+  blocked
+  suspended
+  pending
+}
+
+enum Language {
+  en
+  ar
+}
+
+enum ClientType {
+  web
+  mobile
+}
+
+enum FilePurpose {
+  venue_photo
+  court_photo
+  venue_document
+  player_photo
+  appeal_proof
+  dispute_evidence
+}
+
+enum Visibility {
+  public
+  private
+}
+
+enum VenueStatus {
+  pending
+  approved
+  rejected
+  suspended
+}
+
+enum Sport {
+  football
+  padel
+}
+
+enum ReservationKind {
+  booking
+  manual
+  block
+}
+
+enum ReservationStatus {
+  held
+  confirmed
+  arrived
+  completed
+  no_show
+  no_show_pending
+  cancelled
+  expired
+}
+
+enum PaymentOption {
+  deposit
+  full
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  expired
+}
+
+enum RefundStatus {
+  requested
+  succeeded
+  failed
+}
+
+enum WebhookStatus {
+  received
+  processed
+  failed
+}
+
+enum LedgerAccount {
+  HELD
+  VENUE_BALANCE
+  COMMISSION
+  GATEWAY_FEES
+  PAYOUTS
+}
+
+enum PayoutStatus {
+  draft
+  approved
+  paid
+}
+
+enum DisputeStatus {
+  open
+  upheld
+  overturned
+}
+
+enum AppealStatus {
+  open
+  rejected
+  unblocked
+  strikes_removed
+}
+
+enum ReviewStatus {
+  visible
+  removed
+}
+
+enum OutboxStatus {
+  pending
+  processing
+  sent
+  failed
+}
+
+enum IdempotencyStatus {
+  in_progress
+  succeeded
+  failed
+}
+
+model User {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  email                   String                   @unique
+  passwordHash            String                   @map("password_hash")
+  role                    Role
+  status                  UserStatus               @default(active)
+  name                    String
+  phone                   String?
+  language                Language                 @default(en)
+  emailVerifiedAt         DateTime?                @map("email_verified_at")
+  phoneVerified           Boolean                  @default(false) @map("phone_verified")
+  deletedAt               DateTime?                @map("deleted_at")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  playerProfile           PlayerProfile?
+  ownerProfile            OwnerProfile?
+  sessions                Session[]
+  verificationTokens      EmailVerificationToken[]
+  resetTokens             PasswordResetToken[]
+  deviceTokens            DeviceToken[]
+  venues                  Venue[]
+  reservations            Reservation[]            @relation("playerReservations")
+  strikes                 Strike[]
+  appeals                 Appeal[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
+  auditLogs               AuditLog[]
+  files                   File[]                   @relation("uploadedFiles")
+}
+
+model PlayerProfile {
+  userId        String  @id @db.Uuid
+  photoFileId   String? @map("photo_file_id") @db.Uuid
+  preferredFoot String? @map("preferred_foot")
+  playingStyle  String? @map("playing_style")
+  position1     String? @map("position_1")
+  position2     String? @map("position_2")
+  areaId        String? @map("area_id") @db.Uuid
+  padelSide     String? @map("padel_side")
+  padelHand     String? @map("padel_hand")
+  padelLevel    String? @map("padel_level")
+  user          User    @relation(fields: [userId], references: [id])
+  area          Area?   @relation(fields: [areaId], references: [id])
+  photoFile     File?   @relation(fields: [photoFileId], references: [id])
+}
+
+model OwnerProfile {
+  userId      String  @id @db.Uuid
+  photoFileId String? @map("photo_file_id") @db.Uuid
+  user        User    @relation(fields: [userId], references: [id])
+  photoFile   File?   @relation(fields: [photoFileId], references: [id])
+}
+
+model Session {
+  id                  String                @id @default(uuid()) @db.Uuid
+  userId              String                @db.Uuid
+  refreshTokenHash    String                @map("refresh_token_hash")
+  familyId            String                @db.Uuid
+  client              ClientType
+  deviceInfo          String?               @map("device_info")
+  expiresAt           DateTime              @map("expires_at")
+  revokedAt           DateTime?             @map("revoked_at")
+  lastUsedAt          DateTime?             @map("last_used_at")
+  user                User                  @relation(fields: [userId], references: [id])
+  refreshTokenHistory RefreshTokenHistory[]
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+
+  @@index([userId])
+}
+
+model RefreshTokenHistory {
+  id         String   @id @default(uuid()) @db.Uuid
+  sessionId  String   @db.Uuid
+  tokenHash  String   @unique @map("token_hash")
+  consumedAt DateTime @default(now()) @map("consumed_at")
+  session    Session  @relation(fields: [sessionId], references: [id])
+
+  @@index([sessionId])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+}
+
+model DeviceToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  expoToken  String   @unique @map("expo_token")
+  platform   String
+  lastSeenAt DateTime @map("last_seen_at")
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+}
+
+model File {
+  id              String          @id @default(uuid()) @db.Uuid
+  uploadedBy      String          @db.Uuid
+  purpose         FilePurpose
+  visibility      Visibility
+  storageKey      String          @map("storage_key")
+  mimeType        String          @map("mime_type")
+  size            Int
+  uploader        User            @relation("uploadedFiles", fields: [uploadedBy], references: [id])
+  playerPhotos    PlayerProfile[]
+  ownerPhotos     OwnerProfile[]
+  venuePhotos     VenuePhoto[]
+  courtPhotos     CourtPhoto[]
+  venueDocuments  VenueDocument[]
+  appealProofs    Appeal[]
+  disputeEvidence Dispute[]
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+}
+
+model City {
+  id        String   @id @default(uuid()) @db.Uuid
+  nameEn    String   @map("name_en")
+  nameAr    String   @map("name_ar")
+  isActive  Boolean  @default(true) @map("is_active")
+  areas     Area[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Area {
+  id        String          @id @default(uuid()) @db.Uuid
+  cityId    String          @db.Uuid
+  nameEn    String          @map("name_en")
+  nameAr    String          @map("name_ar")
+  isActive  Boolean         @default(true) @map("is_active")
+  city      City            @relation(fields: [cityId], references: [id])
+  venues    Venue[]
+  profiles  PlayerProfile[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+}
+
+model Venue {
+  id                 String             @id @default(uuid()) @db.Uuid
+  ownerId            String             @db.Uuid
+  areaId             String             @db.Uuid
+  name               String
+  description        String
+  phone              String
+  latitude           Decimal            @db.Decimal(9, 6)
+  longitude          Decimal            @db.Decimal(9, 6)
+  address            String
+  timeZone           String             @default("Africa/Cairo") @map("time_zone")
+  status             VenueStatus        @default(pending)
+  rejectionReason    String?            @map("rejection_reason")
+  commissionBp       Int                @default(1000) @map("commission_bp")
+  maxHoursPerBooking Int                @default(4) @map("max_hours_per_booking")
+  archivedAt         DateTime?          @map("archived_at")
+  owner              User               @relation(fields: [ownerId], references: [id])
+  area               Area               @relation(fields: [areaId], references: [id])
+  photos             VenuePhoto[]
+  documents          VenueDocument[]
+  courts             Court[]
+  openingHours       OpeningHour[]
+  commissionChanges  CommissionChange[]
+  reservations       Reservation[]
+  strikes            Strike[]
+  ledgerEntries      LedgerEntry[]
+  payouts            Payout[]
+  reviews            Review[]
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  @@index([ownerId])
+  @@index([areaId, status])
+}
+
+model VenuePhoto {
+  venueId   String @db.Uuid
+  fileId    String @db.Uuid
+  sortOrder Int    @map("sort_order")
+  venue     Venue  @relation(fields: [venueId], references: [id])
+  file      File   @relation(fields: [fileId], references: [id])
+
+  @@id([venueId, fileId])
+}
+
+model VenueDocument {
+  venueId String @db.Uuid
+  fileId  String @db.Uuid
+  type    String
+  venue   Venue  @relation(fields: [venueId], references: [id])
+  file    File   @relation(fields: [fileId], references: [id])
+
+  @@id([venueId, fileId])
+}
+
+model Court {
+  id              String        @id @default(uuid()) @db.Uuid
+  venueId         String        @db.Uuid
+  name            String
+  sport           Sport
+  size            Int?
+  surface         String?
+  isIndoor        Boolean       @default(false) @map("is_indoor")
+  approvalStatus  String        @default("pending") @map("approval_status")
+  rejectionReason String?       @map("rejection_reason")
+  isActive        Boolean       @default(false) @map("is_active")
+  venue           Venue         @relation(fields: [venueId], references: [id])
+  photos          CourtPhoto[]
+  priceRules      PriceRule[]
+  reservations    Reservation[]
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  @@index([venueId, isActive])
+  @@index([venueId, approvalStatus])
+}
+
+model CourtPhoto {
+  courtId   String @db.Uuid
+  fileId    String @db.Uuid
+  sortOrder Int    @map("sort_order")
+  court     Court  @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  file      File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@id([courtId, fileId])
+}
+
+model OpeningHour {
+  id          String   @id @default(uuid()) @db.Uuid
+  venueId     String   @db.Uuid
+  dayOfWeek   Int      @map("day_of_week")
+  openMinute  Int      @map("open_minute")
+  closeMinute Int      @map("close_minute")
+  venue       Venue    @relation(fields: [venueId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([venueId, dayOfWeek])
+}
+
+model PriceRule {
+  id            String    @id @default(uuid()) @db.Uuid
+  courtId       String    @db.Uuid
+  dayOfWeek     Int       @map("day_of_week")
+  startMinute   Int       @map("start_minute")
+  endMinute     Int       @map("end_minute")
+  pricePiastres Int       @map("price_piastres")
+  validFrom     DateTime  @map("valid_from")
+  validTo       DateTime? @map("valid_to")
+  court         Court     @relation(fields: [courtId], references: [id])
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([courtId, dayOfWeek, validFrom])
+}
+
+model CommissionChange {
+  id        String   @id @default(uuid()) @db.Uuid
+  venueId   String   @db.Uuid
+  oldBp     Int      @map("old_bp")
+  newBp     Int      @map("new_bp")
+  changedBy String   @db.Uuid
+  venue     Venue    @relation(fields: [venueId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Reservation {
+  id                  String            @id @default(uuid()) @db.Uuid
+  courtId             String            @db.Uuid
+  venueId             String            @db.Uuid
+  kind                ReservationKind
+  status              ReservationStatus
+  startsAt            DateTime          @map("starts_at")
+  endsAt              DateTime          @map("ends_at")
+  playerId            String?           @db.Uuid
+  customerName        String?           @map("customer_name")
+  customerPhone       String?           @map("customer_phone")
+  blockReason         String?           @map("block_reason")
+  holdExpiresAt       DateTime?         @map("hold_expires_at")
+  totalPiastres       Int               @map("total_piastres")
+  depositPiastres     Int               @map("deposit_piastres")
+  paymentOption       PaymentOption?    @map("payment_option")
+  paidPiastres        Int               @default(0) @map("paid_piastres")
+  dueAtVenuePiastres  Int               @default(0) @map("due_at_venue_piastres")
+  commissionBp        Int               @map("commission_bp")
+  priceBreakdown      Json              @map("price_breakdown")
+  bookingCode         String            @unique @map("booking_code")
+  confirmedAt         DateTime?         @map("confirmed_at")
+  arrivedAt           DateTime?         @map("arrived_at")
+  completedAt         DateTime?         @map("completed_at")
+  noShowMarkedAt      DateTime?         @map("no_show_marked_at")
+  cancelledAt         DateTime?         @map("cancelled_at")
+  cancelledByRole     Role?             @map("cancelled_by_role")
+  cancelReason        String?           @map("cancel_reason")
+  venueCollectedAt    DateTime?         @map("venue_collected_at")
+  collectedBy         String?           @db.Uuid
+  autoCompleted       Boolean           @default(false) @map("auto_completed")
+  releasedAt          DateTime?         @map("released_at")
+  dayReminderSentAt   DateTime?         @map("day_reminder_sent_at")
+  hoursReminderSentAt DateTime?         @map("hours_reminder_sent_at")
+  court               Court             @relation(fields: [courtId], references: [id])
+  venue               Venue             @relation(fields: [venueId], references: [id])
+  player              User?             @relation("playerReservations", fields: [playerId], references: [id])
+  payments            Payment[]
+  refunds             Refund[]
+  ledgerEntries       LedgerEntry[]
+  strike              Strike?
+  dispute             Dispute?
+  review              Review?
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  @@index([courtId, startsAt])
+  @@index([venueId, startsAt])
+  @@index([playerId, startsAt(sort: Desc)])
+  @@index([holdExpiresAt])
+  @@index([startsAt])
+}
+
+model Payment {
+  id                   String        @id @default(uuid()) @db.Uuid
+  reservationId        String        @db.Uuid
+  amountPiastres       Int           @map("amount_piastres")
+  status               PaymentStatus
+  gatewaySessionId     String        @unique @map("gateway_session_id")
+  gatewayTransactionId String?       @map("gateway_transaction_id")
+  method               String?
+  feePiastres          Int?          @map("fee_piastres")
+  paidAt               DateTime?     @map("paid_at")
+  reservation          Reservation   @relation(fields: [reservationId], references: [id])
+  refunds              Refund[]
+  ledgerEntries        LedgerEntry[]
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+}
+
+model Refund {
+  id              String       @id @default(uuid()) @db.Uuid
+  paymentId       String       @db.Uuid
+  reservationId   String       @db.Uuid
+  amountPiastres  Int          @map("amount_piastres")
+  reason          String
+  status          RefundStatus
+  idempotencyKey  String       @unique @map("idempotency_key")
+  gatewayRefundId String?      @map("gateway_refund_id")
+  attempts        Int          @default(0)
+  lastError       String?      @map("last_error")
+  payment         Payment      @relation(fields: [paymentId], references: [id])
+  reservation     Reservation  @relation(fields: [reservationId], references: [id])
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+}
+
+model WebhookEvent {
+  id             String        @id @default(uuid()) @db.Uuid
+  provider       String
+  eventId        String        @unique @map("event_id")
+  rawPayload     Json          @map("raw_payload")
+  signatureValid Boolean       @map("signature_valid")
+  status         WebhookStatus
+  receivedAt     DateTime      @default(now()) @map("received_at")
+  processedAt    DateTime?     @map("processed_at")
+}
+
+model LedgerEntry {
+  id             String        @id @default(uuid()) @db.Uuid
+  reservationId  String?       @db.Uuid
+  venueId        String?       @db.Uuid
+  account        LedgerAccount
+  amountPiastres Int           @map("amount_piastres")
+  type           String
+  paymentId      String?       @db.Uuid
+  refundId       String?       @db.Uuid
+  payoutId       String?       @db.Uuid
+  idempotencyKey String        @unique @map("idempotency_key")
+  reservation    Reservation?  @relation(fields: [reservationId], references: [id])
+  venue          Venue?        @relation(fields: [venueId], references: [id])
+  payment        Payment?      @relation(fields: [paymentId], references: [id])
+  payout         Payout?       @relation(fields: [payoutId], references: [id])
+  createdAt      DateTime      @default(now()) @map("created_at")
+}
+
+model Payout {
+  id               String        @id @default(uuid()) @db.Uuid
+  venueId          String        @db.Uuid
+  periodStart      DateTime      @map("period_start")
+  periodEnd        DateTime      @map("period_end")
+  amountPiastres   Int           @map("amount_piastres")
+  status           PayoutStatus
+  paidAt           DateTime?     @map("paid_at")
+  paymentReference String?       @map("payment_reference")
+  approvedBy       String?       @db.Uuid
+  venue            Venue         @relation(fields: [venueId], references: [id])
+  ledgerEntries    LedgerEntry[]
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+}
+
+model Strike {
+  id            String      @id @default(uuid()) @db.Uuid
+  playerId      String      @db.Uuid
+  reservationId String      @unique @db.Uuid
+  venueId       String      @db.Uuid
+  expiresAt     DateTime    @map("expires_at")
+  removedAt     DateTime?   @map("removed_at")
+  removedBy     String?     @db.Uuid
+  removedReason String?     @map("removed_reason")
+  player        User        @relation(fields: [playerId], references: [id])
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  venue         Venue       @relation(fields: [venueId], references: [id])
+  disputes      Dispute[]
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@index([playerId, expiresAt])
+}
+
+model Dispute {
+  id             String        @id @default(uuid()) @db.Uuid
+  reservationId  String        @unique @db.Uuid
+  strikeId       String?       @db.Uuid
+  playerMessage  String        @map("player_message")
+  evidenceFileId String?       @db.Uuid
+  ownerResponse  String?       @map("owner_response")
+  status         DisputeStatus
+  decidedBy      String?       @db.Uuid
+  decidedAt      DateTime?     @map("decided_at")
+  decisionNote   String?       @map("decision_note")
+  reservation    Reservation   @relation(fields: [reservationId], references: [id])
+  strike         Strike?       @relation(fields: [strikeId], references: [id])
+  evidenceFile   File?         @relation(fields: [evidenceFileId], references: [id])
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+}
+
+model Appeal {
+  id            String       @id @default(uuid()) @db.Uuid
+  playerId      String       @db.Uuid
+  message       String
+  proofFileId   String?      @db.Uuid
+  status        AppealStatus
+  decidedBy     String?      @db.Uuid
+  decidedAt     DateTime?    @map("decided_at")
+  nextAllowedAt DateTime?    @map("next_allowed_at")
+  player        User         @relation(fields: [playerId], references: [id])
+  proofFile     File?        @relation(fields: [proofFileId], references: [id])
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  @@index([playerId, status])
+}
+
+model BlockedIdentifier {
+  id        String   @id @default(uuid()) @db.Uuid
+  type      String
+  valueHash String   @map("value_hash")
+  reason    String
+  createdBy String   @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([type, valueHash])
+}
+
+model Review {
+  id             String       @id @default(uuid()) @db.Uuid
+  reservationId  String       @unique @db.Uuid
+  playerId       String       @db.Uuid
+  venueId        String       @db.Uuid
+  rating         Int
+  comment        String?
+  status         ReviewStatus @default(visible)
+  removedBy      String?      @db.Uuid
+  ownerReply     String?      @map("owner_reply")
+  ownerRepliedAt DateTime?    @map("owner_replied_at")
+  reservation    Reservation  @relation(fields: [reservationId], references: [id])
+  venue          Venue        @relation(fields: [venueId], references: [id])
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+}
+
+model OutboxEvent {
+  id        String       @id @default(uuid()) @db.Uuid
+  type      String
+  payload   Json
+  status    OutboxStatus @default(pending)
+  attempts  Int          @default(0)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+}
+
+model IdempotencyRecord {
+  id             String            @id @default(uuid()) @db.Uuid
+  actorScope     String            @map("actor_scope")
+  operation      String
+  idempotencyKey String            @map("idempotency_key")
+  requestHash    String            @map("request_hash")
+  status         IdempotencyStatus @default(in_progress)
+  responseStatus Int?              @map("response_status")
+  responseBody   Json?             @map("response_body")
+  resourceId     String?           @map("resource_id") @db.Uuid
+  completedAt    DateTime?         @map("completed_at")
+  expiresAt      DateTime?         @map("expires_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  @@unique([actorScope, operation, idempotencyKey])
+  @@index([expiresAt])
+}
+
+model Notification {
+  id            String        @id @default(uuid()) @db.Uuid
+  outboxEventId String?       @unique @map("outbox_event_id") @db.Uuid
+  userId        String        @db.Uuid
+  type          String
+  title         String
+  body          String
+  link          String?
+  readAt        DateTime?     @map("read_at")
+  user          User          @relation(fields: [userId], references: [id])
+  deliveries    DeliveryLog[]
+  createdAt     DateTime      @default(now()) @map("created_at")
+}
+
+model NotificationPreference {
+  id           String  @id @default(uuid()) @db.Uuid
+  userId       String  @db.Uuid
+  category     String
+  emailEnabled Boolean @default(true) @map("email_enabled")
+  pushEnabled  Boolean @default(true) @map("push_enabled")
+  user         User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, category])
+}
+
+model DeliveryLog {
+  id             String       @id @default(uuid()) @db.Uuid
+  notificationId String       @db.Uuid
+  channel        String
+  status         String
+  error          String?
+  sentAt         DateTime?    @map("sent_at")
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  createdAt      DateTime     @default(now()) @map("created_at")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  actorRole  Role?    @map("actor_role")
+  action     String
+  targetType String   @map("target_type")
+  targetId   String   @map("target_id")
+  oldValue   Json?    @map("old_value")
+  newValue   Json?    @map("new_value")
+  reason     String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+}
