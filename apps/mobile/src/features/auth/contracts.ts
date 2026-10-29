@@ -12,4 +12,5 @@ export interface AuthScreenProps {
   isLoggingIn: boolean;
   theme?: ThemeType;
   lang?: Language;
+  onBrowseGuest?: () => void;
 }

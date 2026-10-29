@@ -145,6 +145,7 @@ export function MobileScreenRouter({
             isLoggingIn={isLoggingIn}
             theme={theme}
             lang={lang}
+            onBrowseGuest={() => setBrowseAsGuest(true)}
           />
         </View>
       ) : userRole === 'player' || !token ? (

@@ -1,4 +1,4 @@
-import { View, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, KeyboardAvoidingView, Platform, Text } from 'react-native';
 import {
   Screen,
   Panel,
@@ -8,9 +8,10 @@ import {
   Action,
   useMobileDesign,
 } from '../../../components/common/MobileDesign';
+import { BrandIcon } from '../../../components/common/BrandIcon';
 import type { AuthScreenContentProps } from '../types';
 export function AuthScreenContent(p: AuthScreenContentProps) {
-  const { t } = useMobileDesign();
+  const { t, lang } = useMobileDesign();
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -22,11 +23,25 @@ export function AuthScreenContent(p: AuthScreenContentProps) {
             width: '100%',
             maxWidth: 480,
             alignSelf: 'center',
-            gap: 24,
-            paddingVertical: 20,
+            gap: 20,
+            paddingVertical: 16,
           }}
         >
-          <Copy accent>mal3bna / {t(p.isSignUp ? 'join' : 'signIn')}</Copy>
+          {/* Brand Header */}
+          <View style={{ alignItems: 'center', gap: 8, marginVertical: 8 }}>
+            <BrandIcon size={72} />
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: '900',
+                color: '#bef264',
+                letterSpacing: 1,
+              }}
+            >
+              ملعبنا • MAL3BNA
+            </Text>
+          </View>
+
           <Title>{t(p.isSignUp ? 'join' : 'welcome')}</Title>
           <Copy>{t('authNote')}</Copy>
           <Panel>
@@ -76,6 +91,13 @@ export function AuthScreenContent(p: AuthScreenContentProps) {
                 p.setErrorMessage('');
               }}
             />
+            {p.onBrowseGuest && (
+              <Action
+                label={lang === 'ar' ? 'تصفح الملاعب كزائر ⚡' : 'Explore Venues as Guest ⚡'}
+                secondary
+                onPress={p.onBrowseGuest}
+              />
+            )}
           </Panel>
         </View>
       </Screen>

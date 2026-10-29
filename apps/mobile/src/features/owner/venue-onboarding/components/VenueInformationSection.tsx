@@ -4,8 +4,8 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
+import { ShimmerAreaChips } from '../../../../components/common/Shimmer';
 import { Theme } from '../../../../constants/theme';
 import type { OwnerAddVenueScreenContentProps } from '../types';
 export function VenueInformationSection({
@@ -57,7 +57,7 @@ export function VenueInformationSection({
 
       <Text style={styles.label}>Cairo District / Area *</Text>
       {loadingAreas ? (
-        <ActivityIndicator color={Theme.colors.lime} style={{ marginVertical: 8 }} />
+        <ShimmerAreaChips count={4} />
       ) : (
         <ScrollView
           horizontal

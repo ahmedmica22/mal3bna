@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ToastBanner } from '../../../components/common/ToastBanner';
 import { Header } from '../../../components/common/Header';
+import { StartingSplashScreen } from '../../../components/common/StartingSplashScreen';
 import { PlayerBookingModals } from '../components/PlayerBookingModals';
 import { AppAuxiliaryModals } from '../components/AppAuxiliaryModals';
 import type { MobileAppViewProps } from '../types';
@@ -120,6 +121,18 @@ export function MobileAppView({
   userStatus,
   venues,
 }: MobileAppViewProps) {
+  if (restoring) {
+    return (
+      <MobileDesignProvider theme={theme} lang={lang}>
+        <StartingSplashScreen
+          theme={theme}
+          lang={lang}
+          isRestoring={true}
+        />
+      </MobileDesignProvider>
+    );
+  }
+
   return (
     <MobileDesignProvider theme={theme} lang={lang}>
       <View style={[styles.outerContainer, { backgroundColor: theme.colors.bg }]}>
@@ -142,11 +155,6 @@ export function MobileAppView({
             onToggleRole={toggleRole}
           />
 
-          {restoring && (
-            <View style={{ padding: 16 }}>
-              <Copy>{lang === 'ar' ? 'جارٍ استعادة الجلسة…' : 'Restoring session…'}</Copy>
-            </View>
-          )}
           {appearanceError && <View style={{padding:16}}><Copy>{appearanceError}</Copy></View>}
           {sessionError && (
             <View style={{ padding: 16, gap: 8 }}>
@@ -182,8 +190,7 @@ export function MobileAppView({
             </View>
           )}
           {/* Main View Router */}
-          {!restoring &&
-            <MobileScreenRouter
+          <MobileScreenRouter
               {...{
                 deleteAccount,
                 areas,
@@ -247,7 +254,6 @@ export function MobileAppView({
                 handlePickOwnerPhoto,
               }}
             />
-          }
 
           {/* Player Modals (Venue Details, Checkout, Cancel) */}
           <PlayerBookingModals

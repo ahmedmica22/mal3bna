@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, View, StyleProp, ViewStyle, Easing } from 'react-native';
 import { useMobileDesign } from './MobileDesignContext';
 import type { ShimmerProps, ShimmerSlotGridProps, ShimmerCourtPillsProps } from '../../types/components';
 
@@ -13,26 +13,54 @@ export function Shimmer({
 }: ShimmerProps) {
   const { theme } = useMobileDesign();
   const isDark = theme.colors.bg !== '#ffffff';
-  const anim = useRef(new Animated.Value(0.35)).current;
+  const pulseAnim = useRef(new Animated.Value(0.4)).current;
+  const sweepAnim = useRef(new Animated.Value(-1)).current;
 
   useEffect(() => {
+    // Pulse animation
     const pulse = Animated.loop(
       Animated.sequence([
-        Animated.timing(anim, {
+        Animated.timing(pulseAnim, {
           toValue: 0.85,
-          duration: 850,
+          duration: 900,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-        Animated.timing(anim, {
-          toValue: 0.35,
-          duration: 850,
+        Animated.timing(pulseAnim, {
+          toValue: 0.4,
+          duration: 900,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
       ]),
     );
+
+    // Continuous sweep wave animation
+    const sweep = Animated.loop(
+      Animated.timing(sweepAnim, {
+        toValue: 1,
+        duration: 1600,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+
     pulse.start();
-    return () => pulse.stop();
-  }, [anim]);
+    sweep.start();
+
+    return () => {
+      pulse.stop();
+      sweep.stop();
+    };
+  }, [pulseAnim, sweepAnim]);
+
+  const baseColor = isDark ? 'rgba(163, 230, 53, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+  const highlightColor = isDark ? 'rgba(190, 242, 100, 0.18)' : 'rgba(255, 255, 255, 0.55)';
+
+  const sweepTranslate = sweepAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: [-120, 240],
+  });
 
   return (
     <Animated.View
@@ -41,12 +69,25 @@ export function Shimmer({
           width: width as any,
           height: height as any,
           borderRadius,
-          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.07)',
-          opacity: anim,
+          backgroundColor: baseColor,
+          opacity: pulseAnim,
+          overflow: 'hidden',
+          position: 'relative',
         },
         style,
       ]}
-    />
+    >
+      <Animated.View
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          width: 80,
+          backgroundColor: highlightColor,
+          transform: [{ translateX: sweepTranslate }, { skewX: '-20deg' }],
+        }}
+      />
+    </Animated.View>
   );
 }
 
@@ -61,6 +102,7 @@ export function ShimmerVenueCard() {
         borderRadius: 24,
         padding: 20,
         gap: 14,
+        overflow: 'hidden',
       }}
     >
       {/* Venue Photo Skeleton */}
@@ -91,6 +133,7 @@ export function ShimmerBookingCard() {
         borderRadius: 24,
         padding: 20,
         gap: 12,
+        overflow: 'hidden',
       }}
     >
       {/* Header */}
@@ -139,6 +182,21 @@ export function ShimmerCourtPills({ count = 3 }: ShimmerCourtPillsProps) {
   );
 }
 
+export function ShimmerAreaChips({ count = 4 }: { count?: number }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 8, paddingVertical: 6 }}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Shimmer
+          key={i}
+          width={i === 0 ? 110 : i === 1 ? 95 : i === 2 ? 120 : 85}
+          height={34}
+          borderRadius={18}
+        />
+      ))}
+    </View>
+  );
+}
+
 export function ShimmerCourtCard() {
   const { theme } = useMobileDesign();
   return (
@@ -150,6 +208,7 @@ export function ShimmerCourtCard() {
         borderRadius: 20,
         padding: 16,
         gap: 12,
+        overflow: 'hidden',
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -173,6 +232,7 @@ export function ShimmerReviewCard() {
         borderRadius: 20,
         padding: 16,
         gap: 10,
+        overflow: 'hidden',
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -181,6 +241,47 @@ export function ShimmerReviewCard() {
       </View>
       <Shimmer width="90%" height={14} borderRadius={6} />
       <Shimmer width="60%" height={14} borderRadius={6} />
+    </View>
+  );
+}
+
+export function ShimmerProfile() {
+  const { theme } = useMobileDesign();
+  return (
+    <View style={{ gap: 16, padding: 20 }}>
+      {/* Avatar Card */}
+      <View
+        style={{
+          backgroundColor: theme.colors.card,
+          borderColor: theme.colors.cardBorder,
+          borderWidth: 1,
+          borderRadius: 24,
+          padding: 24,
+          alignItems: 'center',
+          gap: 14,
+        }}
+      >
+        <Shimmer width={96} height={96} borderRadius={48} />
+        <Shimmer width={160} height={22} borderRadius={8} />
+        <Shimmer width={120} height={14} borderRadius={6} />
+      </View>
+
+      {/* Details Card */}
+      <View
+        style={{
+          backgroundColor: theme.colors.card,
+          borderColor: theme.colors.cardBorder,
+          borderWidth: 1,
+          borderRadius: 24,
+          padding: 20,
+          gap: 16,
+        }}
+      >
+        <Shimmer width={140} height={20} borderRadius={6} />
+        <Shimmer width="100%" height={44} borderRadius={12} />
+        <Shimmer width="100%" height={44} borderRadius={12} />
+        <Shimmer width="45%" height={40} borderRadius={20} />
+      </View>
     </View>
   );
 }

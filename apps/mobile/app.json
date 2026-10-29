@@ -15,7 +15,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mal3bna.courtbooking",
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "userInterfaceStyle": "dark",
+      "backgroundColor": "#0b1715",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#0b1715"
+      }
     },
     "android": {
       "adaptiveIcon": {

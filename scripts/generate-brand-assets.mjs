@@ -86,15 +86,30 @@ function brandIconShader(x, y, width, height, opts = {}) {
     // Large background with icon in center
     const cx = 0.5;
     const cy = 0.45;
-    const scale = 0.35; // Icon takes 35% of splash
+    const scale = 0.32; // Icon takes 32% of splash
     const relX = (u - cx) / scale + 0.5;
     const relY = (v - cy) / scale + 0.5;
 
+    // Ambient stadium lighting gradient
+    const distToCenter = Math.hypot(u - cx, v - cy);
+    const glow = Math.max(0, 1 - distToCenter / 0.55);
+    const bgR = Math.round(11 + 18 * glow * glow);
+    const bgG = Math.round(23 + 36 * glow * glow);
+    const bgB = Math.round(21 + 25 * glow * glow);
+    const baseBg = [bgR, bgG, bgB, 255];
+
     if (relX >= 0 && relX <= 1 && relY >= 0 && relY <= 1) {
-      return renderIconPixel(relX, relY);
+      const px = renderIconPixel(relX, relY);
+      if (px[3] > 0) {
+        const alpha = px[3] / 255;
+        const r = Math.round(px[0] * alpha + baseBg[0] * (1 - alpha));
+        const g = Math.round(px[1] * alpha + baseBg[1] * (1 - alpha));
+        const b = Math.round(px[2] * alpha + baseBg[2] * (1 - alpha));
+        return [r, g, b, 255];
+      }
     }
-    // Deep stadium night background
-    return [11, 23, 21, 255]; // #0b1715
+
+    return baseBg;
   }
 
   if (isAdaptive) {

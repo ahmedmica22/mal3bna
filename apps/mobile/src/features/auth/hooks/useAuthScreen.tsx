@@ -2,7 +2,7 @@ import { errorMessage as getErrorMessage } from '../../../utils/errors';
 import { styles } from '../styles';
 import type { AuthScreenProps } from '../contracts';
 import { useState } from 'react';
-export function useAuthScreen({ onLogin, onRegister, isLoggingIn }: AuthScreenProps) {
+export function useAuthScreen({ onLogin, onRegister, isLoggingIn, onBrowseGuest }: AuthScreenProps) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [emailInput, setEmailInput] = useState('micaahmed666@gmail.com');
@@ -87,6 +87,7 @@ export function useAuthScreen({ onLogin, onRegister, isLoggingIn }: AuthScreenPr
       setPhoneInput,
       setRole,
       styles,
+      onBrowseGuest,
     },
   } as const;
 }

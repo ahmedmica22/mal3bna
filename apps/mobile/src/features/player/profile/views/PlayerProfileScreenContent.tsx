@@ -1,5 +1,6 @@
 import { ScrollView } from 'react-native';
 import type { PlayerProfileScreenContentProps } from '../types';
+import { ShimmerProfile } from '../../../../components/common/Shimmer';
 import { PlayerProfileAvatarHeader } from '../components/PlayerProfileAvatarHeader';
 import { PlayerProfileDetailsCard } from '../components/PlayerProfileDetailsCard';
 import { PlayerProfilePreferencesCard } from '../components/PlayerProfilePreferencesCard';
@@ -33,6 +34,9 @@ export function PlayerProfileScreenContent({
   hasActiveBookings,
   activeStrikesCount,
 }: PlayerProfileScreenContentProps) {
+  if (!userName && !userEmail) {
+    return <ShimmerProfile />;
+  }
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Avatar & Basic Identity */}
