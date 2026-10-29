@@ -56,4 +56,22 @@ describe('Active Habit: Toast Notification System', () => {
 
     expect(screen.queryByText('Reminder')).toBeNull();
   });
+
+  it('deduplicates identical toasts instead of stacking multiple duplicates', () => {
+    render(
+      <ToastProvider>
+        <TestComponent />
+      </ToastProvider>,
+    );
+
+    const successBtn = screen.getByText('Trigger Success');
+    fireEvent.click(successBtn);
+    fireEvent.click(successBtn);
+    fireEvent.click(successBtn);
+    fireEvent.click(successBtn);
+    fireEvent.click(successBtn);
+
+    const matches = screen.getAllByText('Match booked successfully!');
+    expect(matches).toHaveLength(1);
+  });
 });

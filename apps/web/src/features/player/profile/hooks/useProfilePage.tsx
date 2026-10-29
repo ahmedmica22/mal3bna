@@ -1,7 +1,7 @@
 import { useLanguage } from '../../../../store/LanguageStore';
 import { useAuth } from '../../../../store/AuthStore';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { trustApi, authApi, bookingApi } from '../../../../services/api';
 import { useToast } from '../../../../components/feedback/ToastContext';
@@ -53,6 +53,8 @@ export function useProfilePage() {
   const [phone, setPhone] = useState('');
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [isSavingInfo, setIsSavingInfo] = useState(false);
+  const isSavingRef = useRef(false);
+  const isSavingInfoRef = useRef(false);
 
   const meQuery = useQuery({
     queryKey: ['me'],
@@ -80,7 +82,8 @@ export function useProfilePage() {
 
   async function handleSaveAccountInfo(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || isSavingInfo || isSavingInfoRef.current) return;
+    isSavingInfoRef.current = true;
     setIsSavingInfo(true);
     try {
       await authApi.updateProfile({
@@ -100,6 +103,7 @@ export function useProfilePage() {
       );
     } finally {
       setIsSavingInfo(false);
+      isSavingInfoRef.current = false;
     }
   }
 
@@ -172,6 +176,8 @@ export function useProfilePage() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (isSaving || isSavingRef.current) return;
+    isSavingRef.current = true;
     setIsSaving(true);
     setSaveSuccess(false);
     try {
@@ -196,6 +202,7 @@ export function useProfilePage() {
       );
     } finally {
       setIsSaving(false);
+      isSavingRef.current = false;
     }
   }
 

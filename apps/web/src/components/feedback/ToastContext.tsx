@@ -30,7 +30,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const addToast = useCallback(
     (type: ToastType, message: string, title?: string, duration = 4000) => {
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      setToasts((prev) => [...prev.slice(-4), { id, type, title, message, duration }]);
+      setToasts((prev) => {
+        const existingIndex = prev.findIndex(
+          (t) => t.type === type && t.message === message && (t.title ?? '') === (title ?? ''),
+        );
+        if (existingIndex !== -1) {
+          // Reset countdown timer on existing toast without adding a duplicate card
+          const updated = [...prev];
+          updated[existingIndex] = { id, type, title, message, duration };
+          return updated;
+        }
+        return [...prev.slice(-2), { id, type, title, message, duration }];
+      });
     },
     [],
   );
