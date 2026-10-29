@@ -238,6 +238,11 @@ export function MobileScreenRouter({
               }
               onLogout={logout}
               onDeleteAccount={deleteAccount}
+              hasActiveBookings={(playerBookings ?? []).some((b) => {
+                if (b.status === 'cancelled' || b.status === 'completed' || b.status === 'expired') return false;
+                const matchEndTime = new Date(b.endsAt ?? 0).getTime();
+                return matchEndTime > Date.now() || b.status === 'confirmed' || b.status === 'held' || b.status === 'arrived';
+              })}
             />
           )}
 

@@ -23,8 +23,10 @@ export class PrismaAuthRepository implements AuthRepository {
     const upcomingPlayerBookings = await this.prisma.reservation.count({
       where: {
         playerId: id,
-        endsAt: { gt: now },
-        status: { in: ['confirmed', 'draft'] },
+        OR: [
+          { status: { in: ['confirmed', 'draft'] } },
+          { endsAt: { gt: now }, status: { notIn: ['cancelled', 'completed'] } },
+        ],
       },
     });
 
@@ -32,7 +34,7 @@ export class PrismaAuthRepository implements AuthRepository {
       where: {
         playerId: id,
         dueAtVenuePiastres: { gt: 0 },
-        status: 'confirmed',
+        status: { notIn: ['cancelled'] },
       },
     });
 
@@ -46,8 +48,10 @@ export class PrismaAuthRepository implements AuthRepository {
         upcomingOwnerBookings = await this.prisma.reservation.count({
           where: {
             venueId: { in: venues.map((v) => v.id) },
-            endsAt: { gt: now },
-            status: { in: ['confirmed', 'draft'] },
+            OR: [
+              { status: { in: ['confirmed', 'draft'] } },
+              { endsAt: { gt: now }, status: { notIn: ['cancelled', 'completed'] } },
+            ],
           },
         });
       }

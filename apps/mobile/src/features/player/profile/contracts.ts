@@ -20,5 +20,6 @@ export interface PlayerProfileScreenProps {
   onToggleLang: (lang: Language) => void;
   onLogout: () => void;
   onDeleteAccount?: () => void;
+  hasActiveBookings?: boolean;
   activeStrikesCount?: number;
 }

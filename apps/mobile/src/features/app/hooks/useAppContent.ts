@@ -222,6 +222,22 @@ export function useAppContent() {
   }
 
   async function handleDeletePlayerAccount() {
+    const hasActiveBookings = (playerBookings ?? []).some((b) => {
+      if (b.status === 'cancelled' || b.status === 'completed' || b.status === 'expired') return false;
+      const matchEndTime = new Date(b.endsAt ?? 0).getTime();
+      return matchEndTime > Date.now() || b.status === 'confirmed' || b.status === 'held' || b.status === 'arrived';
+    });
+
+    if (hasActiveBookings) {
+      showToast(
+        'error',
+        t.deleteFailed ?? 'Delete Failed',
+        t.cannotDeleteWithBookings ??
+          'A player cannot delete their account as long as they have appointments booked. Please complete or cancel your reservations first.',
+      );
+      return;
+    }
+
     try {
       await deleteAccount();
       showToast(

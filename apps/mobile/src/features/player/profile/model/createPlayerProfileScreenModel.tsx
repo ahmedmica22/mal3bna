@@ -22,6 +22,7 @@ export function createPlayerProfileScreenModel({
   onToggleLang,
   onLogout,
   onDeleteAccount,
+  hasActiveBookings,
   activeStrikesCount,
 }: PlayerProfileScreenProps) {
   const t = translations[lang];
@@ -52,6 +53,7 @@ export function createPlayerProfileScreenModel({
       onUpdateProfile,
       onLogout,
       onDeleteAccount,
+      hasActiveBookings: !!hasActiveBookings,
       onOpenSelectFoot,
       onOpenSelectLevel,
       onOpenSelectStyle,

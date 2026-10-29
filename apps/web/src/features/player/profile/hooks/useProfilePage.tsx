@@ -3,7 +3,7 @@ import { useAuth } from '../../../../store/AuthStore';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { trustApi, authApi } from '../../../../services/api';
+import { trustApi, authApi, bookingApi } from '../../../../services/api';
 import { useToast } from '../../../../components/feedback/ToastContext';
 
 const footOptions = [
@@ -58,6 +58,18 @@ export function useProfilePage() {
     queryKey: ['me'],
     queryFn: () => authApi.me(),
   });
+
+  const bookingsQuery = useQuery({
+    queryKey: ['player-bookings'],
+    queryFn: () => bookingApi.list(),
+  });
+
+  const activeBookingsCount = (bookingsQuery.data ?? []).filter((b) => {
+    if (b.status === 'cancelled' || b.status === 'completed' || b.status === 'expired') return false;
+    const matchEndTime = new Date(b.endsAt).getTime();
+    return matchEndTime > Date.now() || b.status === 'confirmed' || b.status === 'held' || b.status === 'arrived';
+  }).length;
+  const hasActiveBookings = activeBookingsCount > 0;
 
   useEffect(() => {
     if (meQuery.data) {
@@ -210,6 +222,14 @@ export function useProfilePage() {
   }
 
   async function handleDeleteAccount() {
+    if (hasActiveBookings) {
+      toast.error(
+        translate('You cannot delete your account as long as you have appointments booked. Please attend or cancel your reservations first.'),
+        translate('Account Deletion Blocked'),
+      );
+      setShowDeleteModal(false);
+      return;
+    }
     setIsDeletingAccount(true);
     try {
       await authApi.deleteAccount();
@@ -222,7 +242,7 @@ export function useProfilePage() {
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : translate('Action Failed'),
-        translate('Action Failed'),
+        translate('Account Deletion Blocked'),
       );
     } finally {
       setIsDeletingAccount(false);
@@ -276,6 +296,8 @@ export function useProfilePage() {
       setIsEditingInfo,
       isSavingInfo,
       handleSaveAccountInfo,
+      hasActiveBookings,
+      activeBookingsCount,
     },
   } as const;
 }

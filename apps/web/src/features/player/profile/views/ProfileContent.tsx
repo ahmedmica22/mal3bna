@@ -44,6 +44,8 @@ export function ProfileContent({
   setIsEditingInfo,
   isSavingInfo,
   handleSaveAccountInfo,
+  hasActiveBookings,
+  activeBookingsCount,
 }: ProfileContentProps) {
   return (
     <main className="page w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-6">
@@ -103,6 +105,8 @@ export function ProfileContent({
         setShowDeleteModal={setShowDeleteModal}
         isDeletingAccount={isDeletingAccount}
         handleDeleteAccount={handleDeleteAccount}
+        hasActiveBookings={hasActiveBookings}
+        activeBookingsCount={activeBookingsCount}
       />
     </main>
   );

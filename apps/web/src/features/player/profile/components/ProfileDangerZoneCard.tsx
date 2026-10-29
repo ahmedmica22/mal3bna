@@ -1,12 +1,14 @@
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2, ShieldAlert } from 'lucide-react';
 import { Dialog } from '../../../../components/ui/Dialog';
 
 interface ProfileDangerZoneCardProps {
-  translate: (key: string) => string;
+  translate: (key: string, params?: Record<string, string | number>) => string;
   showDeleteModal: boolean;
   setShowDeleteModal: (show: boolean) => void;
   isDeletingAccount: boolean;
   handleDeleteAccount: () => Promise<void>;
+  hasActiveBookings?: boolean | undefined;
+  activeBookingsCount?: number | undefined;
 }
 
 export function ProfileDangerZoneCard({
@@ -15,11 +17,13 @@ export function ProfileDangerZoneCard({
   setShowDeleteModal,
   isDeletingAccount,
   handleDeleteAccount,
+  hasActiveBookings,
+  activeBookingsCount,
 }: ProfileDangerZoneCardProps) {
   return (
     <>
       {/* Danger Zone: Delete Account */}
-      <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-6 shadow-md backdrop-blur-md dark:bg-rose-950/20 dark:border-rose-900/30">
+      <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-6 shadow-md backdrop-blur-md dark:bg-rose-950/20 dark:border-rose-900/30 space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-base font-bold text-red-700 dark:text-rose-400 flex items-center gap-2 m-0 mb-1">
@@ -34,13 +38,37 @@ export function ProfileDangerZoneCard({
           </div>
           <button
             type="button"
+            disabled={hasActiveBookings || isDeletingAccount}
             onClick={() => setShowDeleteModal(true)}
-            className="button inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 shadow-sm shadow-red-600/30 cursor-pointer transition-all shrink-0"
+            title={
+              hasActiveBookings
+                ? translate('Cannot delete account while you have appointments booked.')
+                : undefined
+            }
+            className="button inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 shadow-sm shadow-red-600/30 cursor-pointer transition-all shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-600 disabled:active:scale-100"
           >
             <Trash2 size={14} />
             <span>{translate('Delete Account')}</span>
           </button>
         </div>
+
+        {/* Warning if player has active match appointments booked */}
+        {hasActiveBookings && (
+          <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs">
+            <ShieldAlert size={16} className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+            <div>
+              <p className="font-bold m-0">
+                {translate('Account deletion blocked: active appointments booked')}
+              </p>
+              <p className="text-[11px] opacity-90 m-0 mt-0.5">
+                {translate(
+                  'A player cannot delete their account as long as they have appointments booked ({{value0}} active). Please attend or cancel your upcoming reservations before deleting.',
+                  { value0: activeBookingsCount ?? 1 },
+                )}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Dialog */}
@@ -61,11 +89,22 @@ export function ProfileDangerZoneCard({
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed m-0">
-              {translate(
-                'Are you sure you want to delete your account? This action cannot be undone. Any completed reservations will be anonymized, and active sessions will be terminated.',
-              )}
-            </p>
+            {hasActiveBookings ? (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs">
+                <p className="font-bold m-0 mb-1">
+                  {translate('Action Blocked')}
+                </p>
+                <p className="m-0 text-[11px]">
+                  {translate('You cannot delete your account as long as you have appointments booked. Please attend or cancel your reservations first.')}
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed m-0">
+                {translate(
+                  'Are you sure you want to delete your account? This action cannot be undone. Any completed reservations will be anonymized, and active sessions will be terminated.',
+                )}
+              </p>
+            )}
 
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
               <button
@@ -78,9 +117,9 @@ export function ProfileDangerZoneCard({
               </button>
               <button
                 type="button"
-                disabled={isDeletingAccount}
+                disabled={isDeletingAccount || hasActiveBookings}
                 onClick={() => void handleDeleteAccount()}
-                className="button inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-60 cursor-pointer transition-all shadow-md shadow-red-600/30"
+                className="button inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 cursor-pointer transition-all shadow-md shadow-red-600/30"
               >
                 {isDeletingAccount ? (
                   <>

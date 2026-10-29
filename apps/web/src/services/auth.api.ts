@@ -28,10 +28,7 @@ export const authApi = {
     }
   },
   deleteAccount: async () => {
-    try {
-      await request('/me', { method: 'DELETE' });
-    } finally {
-      setToken(null);
-    }
+    await request('/me', { method: 'DELETE' });
+    setToken(null);
   },
 };

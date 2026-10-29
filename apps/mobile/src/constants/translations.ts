@@ -85,6 +85,8 @@ export const translations = {
     accountDeleted: 'Account Deleted',
     accountDeletedMsg: 'Your account has been deleted successfully.',
     deleteFailed: 'Delete Failed',
+    cannotDeleteWithBookings:
+      'A player cannot delete their account as long as they have appointments booked. Please complete or cancel your reservations first.',
     allAreas: 'All Areas',
     filterByArea: 'Filter by Area',
     area: 'Area',
@@ -203,6 +205,8 @@ export const translations = {
     accountDeleted: 'تم حذف الحساب',
     accountDeletedMsg: 'تم حذف حسابك بنجاح.',
     deleteFailed: 'تعذر الحذف',
+    cannotDeleteWithBookings:
+      'لا يمكن للاعب حذف حسابه طالما توجد لديه حجوزات مواعيد قائمة. يرجى إتمام المباريات أو إلغاؤها أولاً.',
     allAreas: 'كل المناطق',
     filterByArea: 'تصفية حسب المنطقة',
     area: 'المنطقة',

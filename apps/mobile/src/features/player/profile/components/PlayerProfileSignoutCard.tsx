@@ -10,6 +10,8 @@ interface PlayerProfileSignoutCardProps {
   signOutText: string;
   deleteAccountText?: string;
   deleteAccountConfirmText?: string;
+  hasActiveBookings?: boolean | undefined;
+  cannotDeleteWithBookingsText?: string | undefined;
 }
 
 export function PlayerProfileSignoutCard({
@@ -20,6 +22,8 @@ export function PlayerProfileSignoutCard({
   signOutText,
   deleteAccountText,
   deleteAccountConfirmText,
+  hasActiveBookings,
+  cannotDeleteWithBookingsText,
 }: PlayerProfileSignoutCardProps) {
   return (
     <>
@@ -64,6 +68,19 @@ export function PlayerProfileSignoutCard({
         <PrimaryButton
           title={`🗑️ ${deleteAccountText ?? 'Delete Account'}`}
           onPress={() => {
+            if (hasActiveBookings) {
+              const msg =
+                cannotDeleteWithBookingsText ??
+                'A player cannot delete their account as long as they have appointments booked. Please attend or cancel your reservations first.';
+              if (Platform.OS === 'web') {
+                if (typeof window !== 'undefined') window.alert(msg);
+                return;
+              }
+              Alert.alert(deleteAccountText ?? 'Account Deletion Blocked', msg, [
+                { text: isRtl ? 'حسناً' : 'OK' },
+              ]);
+              return;
+            }
             if (Platform.OS === 'web') {
               const ok =
                 typeof window !== 'undefined' &&

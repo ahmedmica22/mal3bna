@@ -30,6 +30,7 @@ export function PlayerProfileScreenContent({
   userPhone,
   userEmail,
   onUpdateProfile,
+  hasActiveBookings,
   activeStrikesCount,
 }: PlayerProfileScreenContentProps) {
   return (
@@ -96,6 +97,8 @@ export function PlayerProfileScreenContent({
         signOutText={t.signOut}
         deleteAccountText={t.deleteAccount}
         deleteAccountConfirmText={t.deleteAccountConfirm}
+        hasActiveBookings={hasActiveBookings}
+        cannotDeleteWithBookingsText={t.cannotDeleteWithBookings}
       />
     </ScrollView>
   );
