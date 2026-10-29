@@ -1,6 +1,6 @@
 import type { Language, Role } from '@court-booking/shared';
 
-export type UserStatus = 'active' | 'blocked' | 'suspended' | 'pending';
+export type UserStatus = 'active' | 'blocked' | 'suspended' | 'pending' | 'deleted';
 export type ClientType = 'web' | 'mobile';
 
 export interface UserRecord {

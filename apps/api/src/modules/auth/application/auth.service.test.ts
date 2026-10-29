@@ -125,5 +125,13 @@ describe('AuthService', () => {
     if (!stored) throw new Error('test user missing');
     stored.hasUpcomingBookings = true;
     await expect(service.deleteMe(user.id)).rejects.toThrowError(/obligations remain/);
+
+    stored.hasUpcomingBookings = false;
+    stored.hasUnpaidBalance = false;
+    await service.deleteMe(user.id);
+    const deletedUser = await repository.findUserById(user.id);
+    expect(deletedUser?.status).toBe('deleted');
+    expect(deletedUser?.deletedAt).toBeInstanceOf(Date);
+    expect(deletedUser?.email).toBe(`deleted+${user.id}@deleted.invalid`);
   });
 });

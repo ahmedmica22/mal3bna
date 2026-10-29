@@ -154,6 +154,8 @@ export class AuthService {
       throw new DomainError('INVALID_CREDENTIALS', 'Invalid email, phone number, or password');
     if (user.status === 'suspended')
       throw new DomainError('ACCOUNT_SUSPENDED', 'Account is suspended');
+    if (user.status === 'deleted' || user.deletedAt)
+      throw new DomainError('INVALID_CREDENTIALS', 'Invalid email, phone number, or password');
 
     this.attempts.delete(rateLimitKey);
     return this.createSession(user, input.client, input.deviceInfo);
@@ -266,6 +268,7 @@ export class AuthService {
     user.email = `deleted+${user.id}@deleted.invalid`;
     user.name = 'Deleted user';
     user.phone = null;
+    user.status = 'deleted';
     user.deletedAt = new Date();
     user.updatedAt = new Date();
     await this.repository.saveUser(user);
@@ -327,7 +330,7 @@ export class AuthService {
 
   private async requireUser(id: string): Promise<UserRecord> {
     const user = await this.repository.findUserById(id);
-    if (!user || user.deletedAt)
+    if (!user || user.deletedAt || user.status === 'deleted')
       throw new DomainError('UNAUTHENTICATED', 'Authentication is invalid');
     return user;
   }

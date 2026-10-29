@@ -24,7 +24,7 @@ export class PrismaAuthRepository implements AuthRepository {
       where: {
         playerId: id,
         OR: [
-          { status: { in: ['confirmed', 'draft'] } },
+          { status: { in: ['confirmed', 'held'] } },
           { endsAt: { gt: now }, status: { notIn: ['cancelled', 'completed'] } },
         ],
       },
@@ -49,7 +49,7 @@ export class PrismaAuthRepository implements AuthRepository {
           where: {
             venueId: { in: venues.map((v) => v.id) },
             OR: [
-              { status: { in: ['confirmed', 'draft'] } },
+              { status: { in: ['confirmed', 'held'] } },
               { endsAt: { gt: now }, status: { notIn: ['cancelled', 'completed'] } },
             ],
           },
