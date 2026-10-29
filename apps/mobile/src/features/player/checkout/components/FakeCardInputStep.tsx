@@ -77,7 +77,7 @@ export function FakeCardInputStep({
       const exp = new Date(2000 + yy, mm - 1, 1);
       return mm >= 1 && mm <= 12 && exp > now;
     })();
-  const cvvValid = /^\d{3,4}$/.test(cvv);
+  const cvvValid = /^\d{3}$/.test(cvv);
   const holderValid = cardHolder.trim().length >= 3;
   const formValid = cardValid && expiryValid && cvvValid && holderValid;
 

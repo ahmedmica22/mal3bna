@@ -139,19 +139,19 @@ export function MobileCardFormFields({
           <Text style={labelStyle}>CVV</Text>
           <TextInput
             value={cvv}
-            onChangeText={(v) => setCvv(v.replace(/\D/g, '').slice(0, 4))}
+            onChangeText={(v) => setCvv(v.replace(/\D/g, '').slice(0, 3))}
             onBlur={() => setTouched((t) => ({ ...t, cvv: true }))}
             placeholder="•••"
             placeholderTextColor={theme.colors.textMuted}
             keyboardType="numeric"
-            maxLength={4}
+            maxLength={3}
             secureTextEntry
             style={inputStyle(cvvValid, touched.cvv)}
             editable={!busy && result === 'idle'}
             autoComplete="cc-csc"
           />
           {touched.cvv && !cvvValid && (
-            <Text style={errorStyle}>3 or 4 digits</Text>
+            <Text style={errorStyle}>3 digits</Text>
           )}
         </View>
       </View>
