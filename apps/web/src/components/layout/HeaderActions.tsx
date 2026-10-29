@@ -20,7 +20,7 @@ export function HeaderActions({
         type="button"
         onClick={toggleLanguage}
         title={language === 'en' ? 'التبديل إلى العربية' : 'Switch to English'}
-        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-emerald-400/50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-lime-400/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
       >
         <Globe size={14} aria-hidden="true" />
         {language === 'en' ? 'العربية' : 'EN'}
@@ -30,7 +30,7 @@ export function HeaderActions({
         onClick={onTheme}
         aria-label={translate('Toggle theme')}
         title={translate(dark ? 'Light mode' : 'Dark mode')}
-        className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"
+        className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-amber-500 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-amber-300 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
       >
         {dark ? <Sun size={17} /> : <Moon size={17} />}
       </button>
@@ -64,13 +64,13 @@ export function HeaderActions({
         <div className="flex gap-2">
           <Link
             to="/auth/login"
-            className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold dark:bg-white/5"
+            className="rounded-xl bg-slate-100 hover:bg-slate-200 px-3.5 py-2 text-xs font-bold text-slate-800 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 hover:scale-105 active:scale-95 transition-all duration-200"
           >
             {translate('Sign In')}
           </Link>
           <Link
             to="/auth/register"
-            className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white dark:bg-lime-400 dark:text-slate-950"
+            className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 dark:bg-lime-400 dark:hover:bg-lime-300 dark:text-slate-950 dark:shadow-lime-400/20 hover:scale-105 active:scale-95 transition-all duration-200"
           >
             {translate('Register')}
           </Link>

@@ -31,7 +31,7 @@ export function VenueCard({ venue, index }: { venue: Venue; index: number }) {
   return (
     <Link
       to={`/venues/${venue.id}`}
-      className="venue-card group relative overflow-hidden rounded-3xl border border-slate-200 bg-white hover:border-emerald-500/40 hover:-translate-y-1.5 transition-all duration-300 shadow-md hover:shadow-xl dark:border-white/10 dark:bg-[#13221f]/75 dark:hover:border-lime-400/40 flex flex-col cursor-pointer no-underline"
+      className="venue-card group relative overflow-hidden rounded-3xl border border-slate-200 bg-white hover:border-emerald-500/60 hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-2xl hover:shadow-emerald-900/10 dark:border-white/10 dark:bg-[#13221f]/85 dark:hover:border-lime-400/60 dark:hover:shadow-lime-400/10 flex flex-col cursor-pointer no-underline"
     >
       {/* Photo / Header Banner */}
       <div className="venue-photo relative h-48 w-full bg-slate-900 overflow-hidden flex flex-col justify-between p-5">
@@ -58,7 +58,7 @@ export function VenueCard({ venue, index }: { venue: Venue; index: number }) {
         {/* Top Badges */}
         <div className="flex items-center justify-between gap-2 z-10 relative">
           <Badge tone="success">
-            <span className="inline-block w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_8px_#baf35e] animate-pulse me-1.5 align-middle" />{' '}
+            <span className="inline-block w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_8px_#baf35e] animate-radar me-1.5 align-middle" />{' '}
             {translate('Verified')}
           </Badge>
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -116,10 +116,10 @@ export function VenueCard({ venue, index }: { venue: Venue; index: number }) {
           </span>
           <span
             aria-label={translate('View {{value0}}', { value0: venue.name })}
-            className="button button-small inline-flex items-center gap-1 px-4 py-1.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 group-hover:bg-emerald-600 group-hover:text-white dark:bg-lime-400/15 dark:text-lime-300 dark:border-lime-400/30 dark:group-hover:bg-lime-400 dark:group-hover:text-slate-950 transition-all shadow-xs"
+            className="button button-small inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-black rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 group-hover:bg-emerald-600 group-hover:text-white dark:bg-lime-400/15 dark:text-lime-300 dark:border-lime-400/30 dark:group-hover:bg-lime-400 dark:group-hover:text-slate-950 transition-all shadow-xs"
           >
             <span>{translate('Book')}</span>
-            <ArrowUpRight size={14} />
+            <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </span>
         </div>
       </div>

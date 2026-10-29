@@ -1,5 +1,7 @@
 import type { HomeContentProps } from '../types';
 import { HomeDiscoverySection } from '../components/HomeDiscoverySection';
+import { HomeHeroSection } from '../components/HomeHeroSection';
+import { MapPin, Clock, Sparkles } from 'lucide-react';
 
 export function HomeContent({
   areaId,
@@ -20,45 +22,13 @@ export function HomeContent({
   translate,
 }: HomeContentProps) {
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8">
-      {/* Hero Section */}
-      <section className="hero grid md:grid-cols-2 gap-10 items-center my-8 p-8 rounded-3xl bg-gradient-to-br from-emerald-50 via-teal-50/50 to-white border border-emerald-200/80 shadow-xl shadow-emerald-500/5 dark:from-[#13221f]/90 dark:via-[#0e1a17]/95 dark:to-[#0b1715] dark:border-white/10 dark:shadow-2xl relative overflow-hidden transition-all">
-        <div className="z-10">
-          <p className="eyebrow text-xs font-black text-emerald-700 dark:text-lime-400 tracking-wider uppercase mb-2">
-            {translate('⚽ CAIRO · EGP · AFRICA/CAIRO')}
-          </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-4">
-            {translate('Find the court that feels like')}{' '}
-            <span className="text-emerald-600 dark:text-lime-400 italic">{translate('home.')}</span>
-          </h1>
-          <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-6 max-w-lg">
-            {translate(
-              'Football and padel venues across Cairo, real-time availability, and instant 10-minute hold booking with 30% online deposit or full checkout.',
-            )}
-          </p>
-          <a
-            href="#venues"
-            className="button inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 dark:bg-lime-400 dark:hover:bg-lime-300 dark:text-slate-950 dark:shadow-lime-400/25 transition-all"
-          >
-            <span>{translate('Explore venues')}</span>
-            <span>↓</span>
-          </a>
-        </div>
-
-        {/* Hero Visual Card */}
-        <div className="hero-art relative flex items-center justify-center p-8 rounded-2xl bg-white/90 border border-emerald-200/70 shadow-md dark:bg-black/40 dark:border-white/10 overflow-hidden h-64 md:h-72">
-          <div className="absolute -top-10 -end-10 w-44 h-44 bg-emerald-500/10 dark:bg-lime-400/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-10 -start-10 w-44 h-44 bg-teal-500/10 dark:bg-emerald-500/10 rounded-full blur-3xl" />
-          <div className="text-center z-10">
-            <span className="block text-4xl sm:text-5xl font-black tracking-tighter text-slate-900 dark:text-slate-100 leading-none">
-              {translate('GOOD')}
-              <br />
-              <span className="text-emerald-600 dark:text-lime-400">{translate('GAME')}</span>
-            </span>
-            <i className="not-italic text-4xl mt-3 block animate-bounce">⚽</i>
-          </div>
-        </div>
-      </section>
+    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6">
+      {/* Animated Hero Showcase */}
+      <HomeHeroSection
+        translate={translate}
+        onSelectSport={setSport}
+        selectedSport={sport}
+      />
 
       {/* Discovery Section */}
       <HomeDiscoverySection
@@ -82,20 +52,58 @@ export function HomeContent({
         }}
       />
 
-      {/* 3 Steps Promise */}
-      <section className="promise grid grid-cols-1 sm:grid-cols-3 gap-4 my-16 p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center dark:bg-white/5 dark:border-white/10">
-        <strong className="text-sm font-bold text-slate-700 dark:text-slate-200">
-          <span className="text-emerald-700 me-2 font-black dark:text-lime-400">01</span>{' '}
-          {translate('Pick your court')}
-        </strong>
-        <strong className="text-sm font-bold text-slate-700 dark:text-slate-200">
-          <span className="text-emerald-700 me-2 font-black dark:text-lime-400">02</span>{' '}
-          {translate('Choose consecutive hours')}
-        </strong>
-        <strong className="text-sm font-bold text-slate-700 dark:text-slate-200">
-          <span className="text-emerald-700 me-2 font-black dark:text-lime-400">03</span>{' '}
-          {translate('Show up and kickoff')}
-        </strong>
+      {/* 3 Steps Promise — Responsive Glass Cards with Active Animations */}
+      <section className="promise grid grid-cols-1 md:grid-cols-3 gap-6 my-16">
+        <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-xl dark:border-white/10 dark:bg-[#13221f]/75 dark:hover:border-lime-400/40">
+          <div className="flex items-center gap-4 mb-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 font-black text-lg dark:bg-lime-400/15 dark:text-lime-400 shadow-sm group-hover:scale-110 transition-transform">
+              01
+            </span>
+            <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-emerald-600 dark:text-lime-400">
+              <MapPin size={20} />
+            </div>
+          </div>
+          <strong className="block text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
+            {translate('Pick your court')}
+          </strong>
+          <p className="text-xs text-slate-500 dark:text-slate-400 m-0 leading-relaxed">
+            {translate('Browse approved venues across New Cairo, Maadi, Zayed, and 6th of October.')}
+          </p>
+        </div>
+
+        <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-xl dark:border-white/10 dark:bg-[#13221f]/75 dark:hover:border-lime-400/40">
+          <div className="flex items-center gap-4 mb-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 font-black text-lg dark:bg-lime-400/15 dark:text-lime-400 shadow-sm group-hover:scale-110 transition-transform">
+              02
+            </span>
+            <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-emerald-600 dark:text-lime-400">
+              <Clock size={20} />
+            </div>
+          </div>
+          <strong className="block text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
+            {translate('Choose consecutive hours')}
+          </strong>
+          <p className="text-xs text-slate-500 dark:text-slate-400 m-0 leading-relaxed">
+            {translate('Lock 1 to 4 consecutive hours with guaranteed instant 10-minute payment hold.')}
+          </p>
+        </div>
+
+        <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-xl dark:border-white/10 dark:bg-[#13221f]/75 dark:hover:border-lime-400/40">
+          <div className="flex items-center gap-4 mb-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 font-black text-lg dark:bg-lime-400/15 dark:text-lime-400 shadow-sm group-hover:scale-110 transition-transform">
+              03
+            </span>
+            <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-emerald-600 dark:text-lime-400">
+              <Sparkles size={20} />
+            </div>
+          </div>
+          <strong className="block text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
+            {translate('Show up and kickoff')}
+          </strong>
+          <p className="text-xs text-slate-500 dark:text-slate-400 m-0 leading-relaxed">
+            {translate('Check in seamlessly via matchday QR code or code verification upon arrival.')}
+          </p>
+        </div>
       </section>
     </div>
   );
