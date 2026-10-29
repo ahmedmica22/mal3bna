@@ -11,11 +11,11 @@
 *.log
 .vscode/
 .idea/
-# AI Agent instructions & logs
+# Markdown files (all ignored except root README.md)
+*.md
+**/*.md
+!/README.md
 AGENT/
-AGENTS.md
-progress.md
-decisions.md
 
 # OS & Editor
 Thumbs.db
